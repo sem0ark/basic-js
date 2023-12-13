@@ -20,6 +20,9 @@ function encodeLine(str) {
     else {
       if (count === 1) result += char;
       else if (count > 1) result += count.toString() + char;
+
+      char = c;
+      count = 1;
     }
   }
 
