@@ -1,31 +1,49 @@
-const { NotImplementedError } = require('../extensions/index.js');
-
 /**
  * Implement chainMaker object according to task description
  * 
  */
+
 const chainMaker = {
   getLength() {
-    throw new NotImplementedError('Not implemented');
-    // remove line with error and write your code here
+    return this.arr?.length || 0;
   },
-  addLink(/* value */) {
-    throw new NotImplementedError('Not implemented');
-    // remove line with error and write your code here
+
+  addLink(value) {
+    if (value !== undefined) value = new String(value);
+    else value = '';
+
+    const cur = this.arr || [];
+    return newMaker(cur.concat([value]));
   },
-  removeLink(/* position */) {
-    throw new NotImplementedError('Not implemented');
-    // remove line with error and write your code here
+
+  removeLink(position) {
+    if (typeof position !== "number"
+      || !Number.isInteger(position)
+      || position <= 0
+      || position > this.getLength()) throw new Error("You can't remove incorrect link!");
+
+    const cur = this.arr || [];
+    return newMaker(cur.filter((v, i) => i !== (position - 1)));
   },
+
   reverseChain() {
-    throw new NotImplementedError('Not implemented');
-    // remove line with error and write your code here
+    const cur = this.arr || [];
+    return newMaker([...cur].reverse());
   },
+
   finishChain() {
-    throw new NotImplementedError('Not implemented');
-    // remove line with error and write your code here
+    const cur = this.arr || [];
+    const result = "( " + cur.join(" )~~( ") + " )";
+    return result;
   }
 };
+
+function newMaker(arr) {
+  const obj = { arr: arr || [] };
+  Object.setPrototypeOf(obj, chainMaker);
+  return obj;
+}
+
 
 module.exports = {
   chainMaker
