@@ -16,23 +16,43 @@ const { NotImplementedError } = require('../extensions/index.js');
 function transform(arr) {
   if (!(arr instanceof Array)) throw Error("'arr' parameter must be an instance of the Array!");
 
+  const n = arr.length;
   const result = [];
-  let deletedNext = false;
+  const to_add = new Array(n).fill(1);
 
-  for (let i = 0; i < arr.length; i++) {
-    if (arr[i] === '--discard-prev') {
-      if (result.length > 0) result.pop();
-    } else if (arr[i] === '--double-next') {
-      if (arr.length > i + 1) result.push(arr[i + 1]);
-    } else if (arr[i] === '--double-prev') {
-      if (i > 0 && !deletedNext) result.push(arr[i - 1]);
-      if (deletedNext) deletedNext = false;
-    } else if (arr[i] === '--discard-next') {
-      i++;
-      deletedNext = true;
-    } else result.push(arr[i]);
+  const commands = [
+    '--discard-prev',
+    '--discard-next',
+    '--double-prev',
+    '--double-next'
+  ]
+
+  for (let i = 0; i < n; i++) {
+    switch (arr[i]) {
+      case '--discard-prev':
+        if (i > 0 && to_add[i - 1] > 0) to_add[i - 1] -= 1;
+        break;
+      case '--discard-next':
+        if (i < n - 1 && to_add[i + 1] > 0) to_add[i + 1] -= 1;
+        break;
+      case '--double-prev':
+        if (i > 0 && to_add[i - 1] > 0) to_add[i - 1]++;
+        break;
+      case '--double-next':
+        if (i < n - 1 && to_add[i + 1] > 0) to_add[i + 1]++;
+        break;
+      default: break;
+    }
   }
-  return result
+
+  for (let i = 0; i < n; i++) {
+    if (!commands.includes(arr[i])) {
+      for (; to_add[i] > 0; to_add[i]--)
+        result.push(arr[i]);
+    }
+  }
+
+  return result;
 }
 
 module.exports = {
